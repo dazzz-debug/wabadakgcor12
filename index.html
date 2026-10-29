@@ -1,0 +1,1205 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REZZX TOOLKIT VIP v4.0</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandYellow: '#FFD000',
+                        brandYellowLight: '#FFE875',
+                        brandBlack: '#121212',
+                        brandGray: '#F4F4F5',
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'neo': '3px 3px 0px #121212',
+                        'neo-lg': '5px 5px 0px #121212',
+                        'neo-sm': '2px 2px 0px #121212',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F8F9FA;
+            color: #121212;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F4F4F5;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #121212;
+            border-radius: 4px;
+        }
+
+        /* Neo-Brutalism Borders & Elements */
+        .neo-border {
+            border: 2px solid #121212;
+        }
+        .neo-border-thin {
+            border: 1px solid #121212;
+        }
+        
+        .tab-slide-container {
+            display: flex;
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            width: 100%;
+        }
+
+        .tab-page {
+            min-width: 100%;
+            flex-shrink: 0;
+        }
+
+        /* Lock Overlay for Free Users */
+        .locked-overlay {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Hide scrollbars for clean UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col justify-between select-none bg-[#F4F4F5]">
+
+    <!-- LOGIN / AUTHENTICATION MODAL -->
+    <div id="authModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+        <div class="bg-white neo-border w-full max-w-md p-6 rounded-2xl shadow-neo-lg relative">
+            <div class="flex justify-center mb-4">
+                <div class="bg-brandYellow neo-border p-4 rounded-2xl shadow-neo font-extrabold text-2xl flex items-center gap-2">
+                    <i class="fa-solid font-black fa-shield-halved"></i> REZZX VIP SYSTEM
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginSection">
+                <h2 class="text-xl font-bold text-center mb-1">Akses Akun Anda</h2>
+                <p class="text-xs text-center text-gray-600 mb-5">Masukkan Username & Password untuk masuk</p>
+
+                <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-1">Username</label>
+                        <input type="text" id="loginUser" required class="w-full neo-border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brandYellow text-sm font-semibold" placeholder="Masukkan username...">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-1">Password</label>
+                        <input type="password" id="loginPass" required class="w-full neo-border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brandYellow text-sm font-semibold" placeholder="Masukkan password...">
+                    </div>
+
+                    <button type="submit" class="w-full bg-brandYellow hover:bg-yellow-400 font-bold p-3 rounded-xl neo-border shadow-neo active:translate-x-0.5 active:translate-y-0.5 transition-all text-sm uppercase">
+                        <i class="fa-solid fa-right-to-bracket mr-2"></i> Masuk Sekarang
+                    </button>
+                </form>
+
+                <div class="mt-4 text-center">
+                    <button onclick="toggleAuthMode('register')" class="text-xs font-bold underline hover:text-yellow-600">
+                        Belum punya akun? Buat akun baru
+                    </button>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerSection" class="hidden">
+                <h2 class="text-xl font-bold text-center mb-1">Pendaftaran Member</h2>
+                <p class="text-xs text-center text-gray-600 mb-5">Buat akun baru untuk mengakses fitur gratis</p>
+
+                <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-1">Username Baru</label>
+                        <input type="text" id="regUser" required class="w-full neo-border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brandYellow text-sm font-semibold" placeholder="Buat username...">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-1">Password Baru</label>
+                        <input type="password" id="regPass" required class="w-full neo-border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brandYellow text-sm font-semibold" placeholder="Buat password...">
+                    </div>
+
+                    <button type="submit" class="w-full bg-black text-white hover:bg-gray-800 font-bold p-3 rounded-xl neo-border shadow-neo active:translate-x-0.5 active:translate-y-0.5 transition-all text-sm uppercase">
+                        <i class="fa-solid fa-user-plus mr-2"></i> Daftar Akun Free
+                    </button>
+                </form>
+
+                <div class="mt-4 text-center">
+                    <button onclick="toggleAuthMode('login')" class="text-xs font-bold underline hover:text-yellow-600">
+                        Sudah punya akun? Login disini
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER / APP BAR -->
+    <header class="bg-brandYellow neo-border-thin border-b-2 border-black p-3 md:p-4 flex justify-between items-center z-20 sticky top-0 shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="bg-white neo-border p-2 rounded-xl shadow-neo flex items-center justify-center">
+                <i class="fa-solid fa-bolt-lightning text-xl text-black"></i>
+            </div>
+            <div>
+                <h1 class="font-black text-lg md:text-xl tracking-tight leading-none">REZZX TOOLKIT</h1>
+                <span class="text-[10px] font-bold uppercase bg-black text-white px-2 py-0.5 rounded-full inline-block mt-0.5">
+                    v4.0 Ultra Edition
+                </span>
+            </div>
+        </div>
+
+        <!-- User Profile Pill Header -->
+        <div class="flex items-center gap-2">
+            <div onclick="openAccountSettings()" class="bg-white neo-border p-1.5 md:p-2 rounded-xl shadow-neo cursor-pointer flex items-center gap-2 hover:bg-yellow-50 transition-all">
+                <div class="w-8 h-8 rounded-lg bg-black text-brandYellow flex items-center justify-center font-bold text-sm">
+                    <span id="userAvatar">R</span>
+                </div>
+                <div class="text-left hidden sm:block">
+                    <p id="headerUsername" class="text-xs font-black leading-tight">Rezzx</p>
+                    <p id="headerBadge" class="text-[10px] font-extrabold text-green-600 uppercase">PREMIUM VIP</p>
+                </div>
+                <i class="fa-solid fa-gear text-xs ml-1 text-gray-500"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- HORIZONTAL TAB NAVIGATION BAR -->
+    <nav class="bg-white neo-border-thin border-b-2 border-black overflow-x-auto no-scrollbar py-2 px-3 z-10">
+        <div class="flex gap-2 min-w-max mx-auto">
+            <button onclick="switchTab(0)" class="tab-btn active-tab bg-brandYellow neo-border px-4 py-2 rounded-xl font-extrabold text-xs flex items-center gap-2 shadow-neo transition-all">
+                <i class="fa-brands fa-whatsapp text-sm"></i> WA & TG Tools
+            </button>
+            <button onclick="switchTab(1)" class="tab-btn bg-white hover:bg-gray-100 neo-border px-4 py-2 rounded-xl font-extrabold text-xs flex items-center gap-2 shadow-neo transition-all">
+                <i class="fa-solid fa-photo-film text-sm"></i> Alight & Downloader
+            </button>
+            <button onclick="switchTab(2)" class="tab-btn bg-white hover:bg-gray-100 neo-border px-4 py-2 rounded-xl font-extrabold text-xs flex items-center gap-2 shadow-neo transition-all">
+                <i class="fa-solid fa-kaaba text-sm"></i> Islami Suite
+            </button>
+            <button onclick="switchTab(3)" class="tab-btn bg-white hover:bg-gray-100 neo-border px-4 py-2 rounded-xl font-extrabold text-xs flex items-center gap-2 shadow-neo transition-all">
+                <i class="fa-solid fa-wallet text-sm"></i> Tabungan Ku
+            </button>
+            <button onclick="switchTab(4)" class="tab-btn bg-white hover:bg-gray-100 neo-border px-4 py-2 rounded-xl font-extrabold text-xs flex items-center gap-2 shadow-neo transition-all">
+                <i class="fa-solid fa-comments text-sm"></i> Chat Global
+            </button>
+            <button onclick="switchTab(5)" class="tab-btn bg-white hover:bg-gray-100 neo-border px-4 py-2 rounded-xl font-extrabold text-xs flex items-center gap-2 shadow-neo transition-all">
+                <i class="fa-solid fa-gamepad text-sm"></i> Mini Games
+            </button>
+        </div>
+    </nav>
+
+    <!-- MAIN CAROUSEL CONTENT AREA -->
+    <main class="flex-1 overflow-hidden relative">
+        <div id="tabContainer" class="tab-slide-container h-full">
+
+            <!-- TAB 1: WHATSAPP & TELEGRAM TOOLS -->
+            <section class="tab-page p-4 md:p-6 overflow-y-auto max-h-full space-y-6">
+                <!-- Upgrade Banner for Free Users -->
+                <div id="freeBanner" class="bg-gradient-to-r from-yellow-300 via-brandYellow to-yellow-400 neo-border p-4 rounded-2xl shadow-neo flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-black text-yellow-400 p-3 rounded-xl neo-border">
+                            <i class="fa-solid fa-crown text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-base uppercase">Upgrade ke Premium VIP</h3>
+                            <p class="text-xs text-gray-800 font-medium">Buka semua fitur Banned Target, Verified Meta, Mass Blast, dan Telegram Reports!</p>
+                        </div>
+                    </div>
+                    <a href="https://wa.me/085974266055?text=Halo%20Admin%20Rezzx,%20saya%20mau%20order%20Upgrade%20Akun%20Premium%20VIP" target="_blank" class="w-full md:w-auto bg-black text-white hover:bg-gray-900 px-5 py-2.5 rounded-xl font-extrabold text-xs neo-border shadow-neo text-center transition-all">
+                        <i class="fa-brands fa-whatsapp text-green-400 mr-2"></i> Beli Premium (Rp 25.000)
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- WA Kebal / Anti Banned (FREE) -->
+                    <div class="bg-white neo-border p-5 rounded-2xl shadow-neo space-y-4">
+                        <div class="flex items-center gap-3 border-b-2 border-black pb-3">
+                            <div class="bg-green-100 border border-black p-2 rounded-xl">
+                                <i class="fa-shield-virus fa-solid text-xl text-green-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-black text-base">Injeksi WA Kebal Kenon</h3>
+                                <p class="text-xs text-gray-500">Proteksi nomor dari serangan spam report & bug v12</p>
+                            </div>
+                        </div>
+
+                        <form onsubmit="handleInjectKebal(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Nomor WhatsApp Target</label>
+                                <input type="text" id="kebalNum" placeholder="Contoh: 6285974266055" required class="w-full neo-border p-3 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brandYellow">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Pilih Payload Anti-Banned</label>
+                                <select class="w-full neo-border p-3 rounded-xl text-sm font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-brandYellow">
+                                    <option>Shield v9.4 (Anti-Hard Ban)</option>
+                                    <option>Immunity Protocol (Anti Spambot)</option>
+                                    <option>Meta Ghost Anti-Report Filter</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="w-full bg-brandYellow hover:bg-yellow-400 font-black p-3 rounded-xl neo-border shadow-neo text-xs uppercase">
+                                <i class="fa-solid fa-lock text-xs mr-2"></i> Aktifkan Anti-Kenon
+                            </button>
+                        </form>
+
+                        <div id="kebalLog" class="hidden bg-gray-900 text-green-400 p-3 rounded-xl font-mono text-xs border border-black h-28 overflow-y-auto"></div>
+                    </div>
+
+                    <!-- Pulihkan WA Kenon / Unban (FREE) -->
+                    <div class="bg-white neo-border p-5 rounded-2xl shadow-neo space-y-4">
+                        <div class="flex items-center gap-3 border-b-2 border-black pb-3">
+                            <div class="bg-blue-100 border border-black p-2 rounded-xl">
+                                <i class="fa-solid fa-rotate-left text-xl text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-black text-base">Pulihkan WA Terbanned</h3>
+                                <p class="text-xs text-gray-500">Generator banding otomatis & pemulihan akun</p>
+                            </div>
+                        </div>
+
+                        <form onsubmit="handleUnban(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Nomor WA Terbanned</label>
+                                <input type="text" id="unbanNum" placeholder="Contoh: 628123456789" required class="w-full neo-border p-3 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brandYellow">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Alasan Banding Support</label>
+                                <select id="unbanReason" class="w-full neo-border p-3 rounded-xl text-sm font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-brandYellow">
+                                    <option>Akun Diretas / Login Tidak Dikenal</option>
+                                    <option>Kesalahan Sistem Anti-Spam Meta</option>
+                                    <option>Terkena Report Palsu / Malicious Report</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="w-full bg-black text-white hover:bg-gray-800 font-black p-3 rounded-xl neo-border shadow-neo text-xs uppercase">
+                                <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Banding Unban
+                            </button>
+                        </form>
+
+                        <div id="unbanLog" class="hidden bg-black text-white p-3 rounded-xl font-mono text-xs border border-black h-28 overflow-y-auto"></div>
+                    </div>
+
+                    <!-- META VERIFICATION & BLAST (PREMIUM ONLY) -->
+                    <div class="bg-white neo-border p-5 rounded-2xl shadow-neo space-y-4 relative overflow-hidden">
+                        <div class="flex items-center gap-3 border-b-2 border-black pb-3">
+                            <div class="bg-purple-100 border border-black p-2 rounded-xl">
+                                <i class="fa-solid fa-circle-check text-xl text-purple-600"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-black text-base">Meta Verified & WA Blast</h3>
+                                    <span class="bg-yellow-400 text-black text-[10px] font-extrabold px-2 py-0.5 rounded-md border border-black">PREMIUM</span>
+                                </div>
+                                <p class="text-xs text-gray-500">Layanan pengiriman massal & pengajuan centang biru</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Format Nomor Blast (Pisah Koma)</label>
+                                <textarea rows="2" placeholder="62812345..., 62856789..." class="w-full neo-border p-3 rounded-xl text-sm font-semibold focus:outline-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Pesan Verifikasi / Blast</label>
+                                <input type="text" placeholder="Masukkan isi pesan blast..." class="w-full neo-border p-3 rounded-xl text-sm font-semibold focus:outline-none">
+                            </div>
+                            <button onclick="triggerPremiumAction('WA Blast Massal')" class="w-full bg-brandYellow font-black p-3 rounded-xl neo-border shadow-neo text-xs uppercase">
+                                Jalankan Blast System
+                            </button>
+                        </div>
+
+                        <!-- Locked Overlay for Free Users -->
+                        <div class="prem-overlay locked-overlay absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10 transition-all">
+                            <i class="fa-solid fa-lock text-4xl text-black mb-2"></i>
+                            <h4 class="font-black text-lg">FITUR KHUSUS PREMIUM VIP</h4>
+                            <p class="text-xs font-semibold text-gray-700 max-w-xs mb-3">Login sebagai VIP (Rezzx / 1122) atau Beli Lisensi VIP untuk Membuka Fitur Ini.</p>
+                            <a href="https://wa.me/085974266055?text=Order%20Premium%20VIP%20Rezzx%20Tools" target="_blank" class="bg-black text-white px-4 py-2 rounded-xl font-bold text-xs neo-border shadow-neo">
+                                Order Lisensi VIP (085974266055)
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- TELEGRAM & TARGET REPORT (PREMIUM ONLY) -->
+                    <div class="bg-white neo-border p-5 rounded-2xl shadow-neo space-y-4 relative overflow-hidden">
+                        <div class="flex items-center gap-3 border-b-2 border-black pb-3">
+                            <div class="bg-red-100 border border-black p-2 rounded-xl">
+                                <i class="fa-solid fa-bug text-xl text-red-600"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-black text-base">Telegram & WA Report Target</h3>
+                                    <span class="bg-yellow-400 text-black text-[10px] font-extrabold px-2 py-0.5 rounded-md border border-black">PREMIUM</span>
+                                </div>
+                                <p class="text-xs text-gray-500">Laporan Banned Massal ke Server Telegram & WA</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Target Account / Channel / Number</label>
+                                <input type="text" placeholder="@channel_target / +628xxx" class="w-full neo-border p-3 rounded-xl text-sm font-semibold">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Tipe Serangan Report</label>
+                                <select class="w-full neo-border p-3 rounded-xl text-sm font-semibold bg-white">
+                                    <option>Mass Spam & Malicious Link Report</option>
+                                    <option>Violent & Harassment Abuse</option>
+                                    <option>Telegram Channel Banned Attack</option>
+                                </select>
+                            </div>
+                            <button onclick="triggerPremiumAction('Report Banned Target')" class="w-full bg-red-500 text-white font-black p-3 rounded-xl neo-border shadow-neo text-xs uppercase">
+                                Launch Report Server
+                            </button>
+                        </div>
+
+                        <!-- Locked Overlay for Free Users -->
+                        <div class="prem-overlay locked-overlay absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10 transition-all">
+                            <i class="fa-solid fa-lock text-4xl text-black mb-2"></i>
+                            <h4 class="font-black text-lg">FITUR KHUSUS PREMIUM VIP</h4>
+                            <p class="text-xs font-semibold text-gray-700 max-w-xs mb-3">Login sebagai VIP (Rezzx / 1122) atau Beli Lisensi VIP untuk Membuka Fitur Ini.</p>
+                            <a href="https://wa.me/085974266055?text=Order%20Premium%20VIP%20Rezzx%20Tools" target="_blank" class="bg-black text-white px-4 py-2 rounded-xl font-bold text-xs neo-border shadow-neo">
+                                Order Lisensi VIP (085974266055)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: ALIGHT MOTION MOD & DOWNLOADER -->
+            <section class="tab-page p-4 md:p-6 overflow-y-auto max-h-full space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                    <!-- ALIGHT MOTION MOD APK & PRESETS -->
+                    <div class="bg-white neo-border p-5 rounded-2xl shadow-neo space-y-4 lg:col-span-1">
+                        <div class="flex items-center gap-3 border-b-2 border-black pb-3">
+                            <div class="bg-gradient-to-tr from-green-400 to-blue-500 text-white border border-black p-2.5 rounded-xl">
+                                <i class="fa-solid fa-video text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-black text-base">Alight Motion MOD</h3>
+                                <p class="text-xs text-gray-500">Pro Unlocked & XML Presets Pack</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 text-xs">
+                            <div class="p-3 bg-yellow-50 neo-border rounded-xl">
+                                <span class="font-black block text-sm">AM Pro v5.0.200 (No Watermark)</span>
+                                <p class="text-gray-600 mt-1">Support XML 5MB+, Project Sharing, All Effects Unlocked.</p>
+                                <a href="https://www.mediafire.com" target="_blank" class="mt-2 inline-block bg-black text-white px-3 py-1.5 rounded-lg font-bold shadow-neo">
+                                    <i class="fa-solid fa-download mr-1"></i> Download MOD APK
+                                </a>
+                            </div>
+
+                            <div class="p-3 bg-gray-50 neo-border rounded-xl">
+                                <span class="font-black block text-sm">Bundle Preset XML Slowmo Beat</span>
+                                <p class="text-gray-600 mt-1">Kumpulan 50+ Preset Jedag Jedug Viral TikTok 2026.</p>
+                                <a href="https://drive.google.com" target="_blank" class="mt-2 inline-block bg-brandYellow text-black px-3 py-1.5 rounded-lg font-bold shadow-neo">
+                                    <i class="fa-solid fa-folder-open mr-1"></i> Ambil Presets Pack
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TIKTOK DOWNLOADER -->
+                    <div class="bg-white neo-border p-5 rounded-2xl shadow-neo space-y-4 lg:col-span-1">
+                        <div class="flex items-center gap-3 border-b-2 border-black pb-3">
+                            <div class="bg-black text-white p-2.5 rounded-xl border border-black">
+                                <i class="fa-brands fa-tiktok text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-black text-base">TikTok Downloader</h3>
+                                <p class="text-xs text-gray-500">Download Video Tanpa Watermark</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <input type="text" id="ttUrl" placeholder="Tempel URL Video TikTok..." class="w-full neo-border p-3 rounded-xl text-xs font-semibold focus:outline-none">
+                            <button onclick="processTikTokDownload()" class="w-full bg-black text-white font-black p-3 rounded-xl neo-border shadow-neo text-xs uppercase">
+                                <i class="fa-solid fa-magnifying-glass mr-2"></i> Process Video
+                            </button>
+
+                            <div id="ttResult" class="hidden p-3 bg-gray-100 neo-border rounded-xl text-center space-y-2">
+                                <p class="text-xs font-bold">Video Siap Diunduh!</p>
+                                <div class="w-full h-32 bg-gray-300 rounded-lg flex items-center justify-center neo-border overflow-hidden">
+                                    <i class="fa-solid fa-circle-play text-4xl text-black"></i>
+                                </div>
+                                <a href="#" onclick="alert('Mulai mengunduh file video HD tanpa watermark...')" class="block w-full bg-brandYellow font-extrabold py-2 rounded-lg neo-border shadow-neo text-xs">
+                                    <i class="fa-solid fa-download mr-1"></i> Download HD No WM
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PINTEREST DOWNLOADER -->
+                    <div class="bg-white neo-border p-5 rounded-2xl shadow-neo space-y-4 lg:col-span-1">
+                        <div class="flex items-center gap-3 border-b-2 border-black pb-3">
+                            <div class="bg-red-500 text-white p-2.5 rounded-xl border border-black">
+                                <i class="fa-brands fa-pinterest text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-black text-base">Pinterest Downloader</h3>
+                                <p class="text-xs text-gray-500">Download Foto / Video Resolution Tinggi</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <input type="text" id="pinUrl" placeholder="Tempel URL Pin Pinterest..." class="w-full neo-border p-3 rounded-xl text-xs font-semibold focus:outline-none">
+                            <button onclick="processPinDownload()" class="w-full bg-red-500 text-white font-black p-3 rounded-xl neo-border shadow-neo text-xs uppercase">
+                                <i class="fa-solid fa-file-image mr-2"></i> Process Pin
+                            </button>
+
+                            <div id="pinResult" class="hidden p-3 bg-gray-100 neo-border rounded-xl text-center space-y-2">
+                                <p class="text-xs font-bold">Pin Image Found!</p>
+                                <img src="https://placehold.co/400x300/FFD000/000000?text=Pinterest+HD+Media" class="w-full h-32 object-cover rounded-lg neo-border">
+                                <a href="#" onclick="alert('Mengunduh foto High Resolution...')" class="block w-full bg-black text-white font-extrabold py-2 rounded-lg neo-border shadow-neo text-xs">
+                                    <i class="fa-solid fa-download mr-1"></i> Save Full Image
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- TAB 3: ISLAMI SUITE (AL-QURAN & JADWAL SHOLAT) -->
+            <section class="tab-page p-4 md:p-6 overflow-y-auto max-h-full space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                    <!-- JADWAL SHOLAT -->
+                    <div class="bg-white neo-border p-5 rounded-2xl shadow-neo space-y-4 lg:col-span-1">
+                        <div class="flex items-center gap-3 border-b-2 border-black pb-3">
+                            <div class="bg-emerald-100 border border-black p-2.5 rounded-xl text-emerald-700">
+                                <i class="fa-solid fa-kaaba text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-black text-base">Jadwal Sholat</h3>
+                                <p class="text-xs text-gray-500">Wilayah DKI Jakarta & Sekitarnya</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-emerald-50 neo-border p-4 rounded-xl text-center">
+                            <span class="text-xs font-extrabold uppercase text-emerald-800">Menuju Waktu Sholat Berikutnya</span>
+                            <div id="prayerCountdown" class="text-2xl font-black text-black my-1">00:42:15</div>
+                            <span id="nextPrayerName" class="text-xs bg-emerald-200 text-emerald-900 font-bold px-2 py-0.5 rounded-md border border-black">MAGHRIB - 18:05</span>
+                        </div>
+
+                        <div class="space-y-2 text-xs font-extrabold">
+                            <div class="flex justify-between items-center p-2.5 bg-gray-50 neo-border rounded-xl">
+                                <span>Subuh</span>
+                                <span class="bg-white px-2 py-1 neo-border-thin rounded-lg">04:32 WIB</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2.5 bg-gray-50 neo-border rounded-xl">
+                                <span>Dzuhur</span>
+                                <span class="bg-white px-2 py-1 neo-border-thin rounded-lg">11:54 WIB</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2.5 bg-gray-50 neo-border rounded-xl">
+                                <span>Ashar</span>
+                                <span class="bg-white px-2 py-1 neo-border-thin rounded-lg">15:12 WIB</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2.5 bg-brandYellow neo-border rounded-xl">
+                                <span>Maghrib</span>
+                                <span class="bg-white px-2 py-1 neo-border-thin rounded-lg">18:05 WIB</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2.5 bg-gray-50 neo-border rounded-xl">
+                                <span>Isya</span>
+                                <span class="bg-white px-2 py-1 neo-border-thin rounded-lg">19:16 WIB</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AL-QURAN DIGITAL -->
+                    <div class="bg-white neo-border p-5 rounded-2xl shadow-neo space-y-4 lg:col-span-2">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b-2 border-black pb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-amber-100 border border-black p-2.5 rounded-xl text-amber-800">
+                                    <i class="fa-solid fa-book-quran text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-black text-base">Al-Qur'an Digital</h3>
+                                    <p class="text-xs text-gray-500">Bacaan Surah Pilihan Lengkap & Terjemahan</p>
+                                </div>
+                            </div>
+
+                            <!-- Surah Selector -->
+                            <select id="surahSelect" onchange="loadSurahContent()" class="neo-border p-2 rounded-xl text-xs font-bold bg-brandYellow">
+                                <option value="1">1. Surah Al-Fatihah</option>
+                                <option value="36">36. Surah Yasin</option>
+                                <option value="67">67. Surah Al-Mulk</option>
+                                <option value="18">18. Surah Al-Kahf</option>
+                                <option value="255">Ayat Kursi</option>
+                            </select>
+                        </div>
+
+                        <!-- Audio Player -->
+                        <div class="bg-gray-100 neo-border p-3 rounded-xl flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <button onclick="toggleAudio()" class="w-8 h-8 bg-black text-white rounded-lg flex items-center justify-center neo-border">
+                                    <i id="audioIcon" class="fa-solid fa-play text-xs"></i>
+                                </button>
+                                <span id="audioTitle" class="text-xs font-bold">Murottal Surah Al-Fatihah</span>
+                            </div>
+                            <span class="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-black">Syaikh Mishary Rashid</span>
+                        </div>
+
+                        <!-- Quran Surah Display Area -->
+                        <div id="quranContainer" class="space-y-4 max-h-96 overflow-y-auto pr-2">
+                            <!-- Surah items rendered dynamically -->
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- TAB 4: TABUNGAN KU -->
+            <section class="tab-page p-4 md:p-6 overflow-y-auto max-h-full space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                    <!-- Savings Overview Card -->
+                    <div class="bg-white neo-border p-5 rounded-2xl shadow-neo space-y-4 lg:col-span-1">
+                        <div class="flex items-center gap-3 border-b-2 border-black pb-3">
+                            <div class="bg-yellow-100 border border-black p-2.5 rounded-xl text-black">
+                                <i class="fa-solid fa-piggy-bank text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-black text-base">Tabungan Saya</h3>
+                                <p class="text-xs text-gray-500">Kelola Target Keuangan</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-brandYellow neo-border p-4 rounded-xl space-y-2">
+                            <span class="text-xs font-extrabold uppercase">Total Terkumpul</span>
+                            <div id="totalSavings" class="text-3xl font-black text-black">Rp 1.250.000</div>
+                            <div class="w-full bg-white h-3 rounded-full neo-border overflow-hidden">
+                                <div id="savingsBar" class="bg-black h-full" style="width: 62.5%;"></div>
+                            </div>
+                            <div class="flex justify-between text-[11px] font-bold">
+                                <span>Target: <b id="targetSavings">Rp 2.000.000</b></span>
+                                <span>62.5%</span>
+                            </div>
+                        </div>
+
+                        <form onsubmit="handleAddSavings(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Tambah Uang Masuk (Rp)</label>
+                                <input type="number" id="savingsAmount" required placeholder="Contoh: 50000" class="w-full neo-border p-3 rounded-xl text-xs font-semibold focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Catatan</label>
+                                <input type="text" id="savingsNote" required placeholder="Contoh: Tabungan VIP" class="w-full neo-border p-3 rounded-xl text-xs font-semibold focus:outline-none">
+                            </div>
+                            <button type="submit" class="w-full bg-black text-white font-black p-3 rounded-xl neo-border shadow-neo text-xs uppercase">
+                                + Simpan Setoran
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- History Log -->
+                    <div class="bg-white neo-border p-5 rounded-2xl shadow-neo space-y-4 lg:col-span-2">
+                        <h3 class="font-black text-base border-b-2 border-black pb-3">Riwayat Transaksi Tabungan</h3>
+                        <div id="savingsHistory" class="space-y-2 max-h-80 overflow-y-auto">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- TAB 5: CHAT GLOBAL COMMUNITY -->
+            <section class="tab-page p-4 md:p-6 overflow-y-auto max-h-full flex flex-col justify-between">
+                <div class="bg-white neo-border p-4 rounded-2xl shadow-neo flex-1 flex flex-col h-full max-h-[75vh]">
+                    <div class="flex items-center justify-between border-b-2 border-black pb-3 mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-blue-100 border border-black p-2 rounded-xl">
+                                <i class="fa-solid fa-comments text-lg text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-black text-base">Chat Global Community</h3>
+                                <p class="text-xs text-gray-500">Ruang Obrolan Komunitas VIP Rezzx</p>
+                            </div>
+                        </div>
+                        <span class="bg-green-400 text-black text-[10px] font-black px-2 py-1 rounded-md border border-black flex items-center gap-1">
+                            <span class="w-2 h-2 bg-black rounded-full animate-ping"></span> 142 Online
+                        </span>
+                    </div>
+
+                    <!-- Chat Box Stream -->
+                    <div id="chatStream" class="flex-1 overflow-y-auto space-y-3 p-2 bg-gray-50 neo-border rounded-xl mb-3">
+                        <!-- Chat messages appended here -->
+                    </div>
+
+                    <!-- Chat Input -->
+                    <form onsubmit="handleSendChat(event)" class="flex gap-2">
+                        <input type="text" id="chatInput" placeholder="Tulis pesan ke semua member..." required class="flex-1 neo-border p-3 rounded-xl text-xs font-semibold focus:outline-none">
+                        <button type="submit" class="bg-brandYellow font-black px-5 rounded-xl neo-border shadow-neo text-xs uppercase hover:bg-yellow-400">
+                            <i class="fa-solid fa-paper-plane text-sm"></i>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 6: MINI ARCADE GAMES -->
+            <section class="tab-page p-4 md:p-6 overflow-y-auto max-h-full space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    <!-- GAME 1: SNAKE CLASSIC -->
+                    <div class="bg-white neo-border p-5 rounded-2xl shadow-neo space-y-3 text-center">
+                        <h3 class="font-black text-base border-b-2 border-black pb-2">🐍 Snake Classic</h3>
+                        <div class="flex justify-between items-center text-xs font-bold px-2">
+                            <span>Score: <b id="snakeScore">0</b></span>
+                            <button onclick="initSnakeGame()" class="bg-brandYellow px-2 py-1 rounded neo-border-thin text-[10px]">Restart</button>
+                        </div>
+                        <canvas id="snakeCanvas" width="260" height="200" class="mx-auto neo-border bg-black rounded-xl"></canvas>
+                        <div class="grid grid-cols-3 gap-1 w-36 mx-auto">
+                            <div></div>
+                            <button onclick="changeSnakeDir('UP')" class="bg-gray-200 neo-border py-1 rounded font-bold">▲</button>
+                            <div></div>
+                            <button onclick="changeSnakeDir('LEFT')" class="bg-gray-200 neo-border py-1 rounded font-bold">◄</button>
+                            <button onclick="changeSnakeDir('DOWN')" class="bg-gray-200 neo-border py-1 rounded font-bold">▼</button>
+                            <button onclick="changeSnakeDir('RIGHT')" class="bg-gray-200 neo-border py-1 rounded font-bold">►</button>
+                        </div>
+                    </div>
+
+                    <!-- GAME 2: TIC TAC TOE -->
+                    <div class="bg-white neo-border p-5 rounded-2xl shadow-neo space-y-3 text-center">
+                        <h3 class="font-black text-base border-b-2 border-black pb-2">❌ Tic-Tac-Toe ⭕</h3>
+                        <p id="tttStatus" class="text-xs font-bold text-gray-700">Giliran: Player X</p>
+                        <div id="tttBoard" class="grid grid-cols-3 gap-2 w-48 h-48 mx-auto my-2">
+                            <!-- 9 squares -->
+                        </div>
+                        <button onclick="resetTTT()" class="bg-black text-white font-bold text-xs px-4 py-2 rounded-xl neo-border shadow-neo">
+                            Reset Board
+                        </button>
+                    </div>
+
+                    <!-- GAME 3: MEMORY CARD FLIP -->
+                    <div class="bg-white neo-border p-5 rounded-2xl shadow-neo space-y-3 text-center">
+                        <h3 class="font-black text-base border-b-2 border-black pb-2">🧠 Memory Match</h3>
+                        <p id="memoryStatus" class="text-xs font-bold text-gray-700">Cari Pasangan Emoji!</p>
+                        <div id="memoryGrid" class="grid grid-cols-4 gap-2 w-52 h-48 mx-auto my-2">
+                            <!-- Memory Cards -->
+                        </div>
+                        <button onclick="initMemoryGame()" class="bg-brandYellow text-black font-bold text-xs px-4 py-2 rounded-xl neo-border shadow-neo">
+                            Acak Kartu
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- ACCOUNT SETTINGS MODAL -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white neo-border w-full max-w-sm p-6 rounded-2xl shadow-neo-lg space-y-4">
+            <div class="flex justify-between items-center border-b-2 border-black pb-2">
+                <h3 class="font-black text-base">Pengaturan Akun</h3>
+                <button onclick="closeAccountSettings()" class="text-lg font-bold">&times;</button>
+            </div>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Username Saat Ini</label>
+                    <input type="text" id="settingUser" class="w-full neo-border p-2.5 rounded-xl text-xs font-bold bg-gray-100" readonly>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Update Password</label>
+                    <input type="password" id="settingPass" placeholder="Masukkan password baru..." class="w-full neo-border p-2.5 rounded-xl text-xs font-bold">
+                </div>
+
+                <div class="p-3 bg-brandYellow neo-border rounded-xl">
+                    <p class="text-[11px] font-bold">Status Lisensi: <span id="settingStatusText" class="uppercase">FREE MEMBER</span></p>
+                    <p class="text-[10px] text-gray-800 mt-1">Gunakan Username <b class="underline">Rezzx</b> & Password <b class="underline">1122</b> untuk akses VIP penuh.</p>
+                </div>
+
+                <button onclick="saveAccountSettings()" class="w-full bg-black text-white font-bold p-2.5 rounded-xl neo-border text-xs uppercase shadow-neo">
+                    Simpan Perubahan
+                </button>
+
+                <button onclick="handleLogout()" class="w-full bg-red-500 text-white font-bold p-2.5 rounded-xl neo-border text-xs uppercase shadow-neo">
+                    Logout Akun
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // APP STATE
+        let currentUser = {
+            username: 'Guest',
+            isPremium: false
+        };
+
+        let currentTabIndex = 0;
+
+        // ON LAUNCH
+        window.onload = function() {
+            // Check local storage for session
+            const savedUser = localStorage.getItem('rezzx_user');
+            if(savedUser) {
+                const parsed = JSON.parse(savedUser);
+                loginUser(parsed.username, parsed.isPremium);
+            } else {
+                document.getElementById('authModal').classList.remove('hidden');
+            }
+
+            // Init Tab Switcher
+            updateTabCarousel();
+
+            // Init Quran Default
+            loadSurahContent();
+
+            // Init Games
+            initSnakeGame();
+            initTTT();
+            initMemoryGame();
+
+            // Load Chat Simulated Stream
+            loadChatHistory();
+            
+            // Load Savings Default
+            renderSavings();
+        };
+
+        /* ================= AUTHENTICATION SYSTEM ================= */
+        function toggleAuthMode(mode) {
+            if(mode === 'register') {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('registerSection').classList.remove('hidden');
+            } else {
+                document.getElementById('registerSection').classList.add('hidden');
+                document.getElementById('loginSection').classList.remove('hidden');
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('loginUser').value.trim();
+            const p = document.getElementById('loginPass').value.trim();
+
+            if(u === "Rezzx" && p === "1122") {
+                loginUser("Rezzx", true);
+            } else {
+                loginUser(u, false);
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const u = document.getElementById('regUser').value.trim();
+            loginUser(u, false);
+        }
+
+        function loginUser(username, isPremium) {
+            currentUser = { username, isPremium };
+            localStorage.setItem('rezzx_user', JSON.stringify(currentUser));
+
+            // Update UI elements
+            document.getElementById('headerUsername').innerText = username;
+            document.getElementById('userAvatar').innerText = username.charAt(0).toUpperCase();
+
+            const badge = document.getElementById('headerBadge');
+            const overlays = document.querySelectorAll('.prem-overlay');
+            const freeBanner = document.getElementById('freeBanner');
+
+            if(isPremium) {
+                badge.innerText = "PREMIUM VIP";
+                badge.className = "text-[10px] font-extrabold text-green-600 uppercase";
+                overlays.forEach(el => el.classList.add('hidden'));
+                if(freeBanner) freeBanner.classList.add('hidden');
+            } else {
+                badge.innerText = "FREE MEMBER";
+                badge.className = "text-[10px] font-extrabold text-gray-500 uppercase";
+                overlays.forEach(el => el.classList.remove('hidden'));
+                if(freeBanner) freeBanner.classList.remove('hidden');
+            }
+
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('rezzx_user');
+            location.reload();
+        }
+
+        function openAccountSettings() {
+            document.getElementById('settingUser').value = currentUser.username;
+            document.getElementById('settingStatusText').innerText = currentUser.isPremium ? "PREMIUM VIP" : "FREE MEMBER";
+            document.getElementById('settingsModal').classList.remove('hidden');
+            document.getElementById('settingsModal').classList.add('flex');
+        }
+
+        function closeAccountSettings() {
+            document.getElementById('settingsModal').classList.add('hidden');
+            document.getElementById('settingsModal').classList.remove('flex');
+        }
+
+        function saveAccountSettings() {
+            alert('Pengaturan akun berhasil disimpan!');
+            closeAccountSettings();
+        }
+
+        /* ================= CAROUSEL / TAB SWITCHER ================= */
+        function switchTab(index) {
+            currentTabIndex = index;
+            updateTabCarousel();
+        }
+
+        function updateTabCarousel() {
+            const container = document.getElementById('tabContainer');
+            container.style.transform = `translateX(-${currentTabIndex * 100}%)`;
+
+            // Active button styles
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach((btn, idx) => {
+                if(idx === currentTabIndex) {
+                    btn.classList.add('bg-brandYellow');
+                    btn.classList.remove('bg-white');
+                } else {
+                    btn.classList.remove('bg-brandYellow');
+                    btn.classList.add('bg-white');
+                }
+            });
+        }
+
+        /* ================= WA & TELEGRAM TOOLS LOGIC ================= */
+        function handleInjectKebal(e) {
+            e.preventDefault();
+            const num = document.getElementById('kebalNum').value;
+            const log = document.getElementById('kebalLog');
+            log.classList.remove('hidden');
+            log.innerHTML = `> Initiating Anti-Banned Protocol for ${num}...\n`;
+
+            setTimeout(() => { log.innerHTML += `> Injecting Immunity Payload v9.4...\n`; }, 600);
+            setTimeout(() => { log.innerHTML += `> Bypassing Spam Filter Nodes...\n`; }, 1200);
+            setTimeout(() => { log.innerHTML += `> SUCCESS: Nomor ${num} Terproteksi Kebal Banned!\n`; }, 2000);
+        }
+
+        function handleUnban(e) {
+            e.preventDefault();
+            const num = document.getElementById('unbanNum').value;
+            const log = document.getElementById('unbanLog');
+            log.classList.remove('hidden');
+            log.innerHTML = `> Generating Unban Appeal for ${num}...\n`;
+
+            setTimeout(() => { log.innerHTML += `> Connecting to Meta Support API Router...\n`; }, 700);
+            setTimeout(() => { log.innerHTML += `> Submitting Ticket Request ID #99283...\n`; }, 1400);
+            setTimeout(() => { log.innerHTML += `> SUCCESS: Permohonan Unban Berhasil Dikirim! Cek WA secara berkala.\n`; }, 2200);
+        }
+
+        function triggerPremiumAction(featureName) {
+            alert(`[PREMIUM SUCCESS] Menjalankan ${featureName} server task...`);
+        }
+
+        /* ================= DOWNLOADER TOOLS ================= */
+        function processTikTokDownload() {
+            const url = document.getElementById('ttUrl').value;
+            if(!url) return alert('Masukkan URL TikTok terlebih dahulu!');
+            document.getElementById('ttResult').classList.remove('hidden');
+        }
+
+        function processPinDownload() {
+            const url = document.getElementById('pinUrl').value;
+            if(!url) return alert('Masukkan URL Pinterest terlebih dahulu!');
+            document.getElementById('pinResult').classList.remove('hidden');
+        }
+
+        /* ================= ISLAMI SUITE ================= */
+        const QURAN_DATA = {
+            "1": {
+                title: "Surah Al-Fatihah (Pembuka)",
+                verses: [
+                    { num: 1, arabic: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", latin: "Bismillāhir-raḥmānir-raḥīm", indo: "Dengan nama Allah Yang Maha Pengasih, Maha Penyayang." },
+                    { num: 2, arabic: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", latin: "Al-ḥamdu lillāhi rabbil-'ālamīn", indo: "Segala puji bagi Allah, Tuhan seluruh alam." },
+                    { num: 3, arabic: "الرَّحْمَٰنِ الرَّحِيمِ", latin: "Ar-raḥmānir-raḥīm", indo: "Yang Maha Pengasih, Maha Penyayang." },
+                    { num: 4, arabic: "مَالِكِ يَوْمِ الدِّينِ", latin: "Māliki yaumid-dīn", indo: "Pemilik hari pembalasan." }
+                ]
+            },
+            "36": {
+                title: "Surah Yasin",
+                verses: [
+                    { num: 1, arabic: "يسٓ", latin: "Yā-Sīn", indo: "Ya Sin." },
+                    { num: 2, arabic: "وَالْقُرْآنِ الْحَكِيمِ", latin: "Wal-qur'ānil-ḥakīm", indo: "Demi Al-Qur'an yang penuh hikmah," },
+                    { num: 3, arabic: "إِنَّكَ لَمِنَ الْمُرْسَلِينَ", latin: "Innaka laminal-mursalīn", indo: "Sungguh, engkau (Muhammad) adalah salah seorang dari rasul-rasul." }
+                ]
+            },
+            "67": {
+                title: "Surah Al-Mulk (Kerajaan)",
+                verses: [
+                    { num: 1, arabic: "تَبَارَكَ الَّذِي بِيَدِهِ الْمُلْكُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ", latin: "Tabārakal-lażī biyadihil-mulku wa huwa 'alā kulli syai'in qadīr", indo: "Mahasuci Allah yang menguasai segala kerajaan, dan Dia Mahakuasa atas segala sesuatu." }
+                ]
+            },
+            "18": {
+                title: "Surah Al-Kahf",
+                verses: [
+                    { num: 1, arabic: "الْحَمْدُ لِلَّهِ الَّذِي أَنْزَلَ عَلَىٰ عَبْدِهِ الْكِتَابَ وَلَمْ يَجْعَلْ لَهُ عِوَجًا ۜ", latin: "Al-ḥamdu lillāhil-lażī anzala 'alā 'abdihil-kitāba wa lam yaj'al lahū 'iwajā", indo: "Segala puji bagi Allah yang telah menurunkan Kitab (Al-Qur'an) kepada hamba-Nya dan Dia tidak menjadikannya bengkok." }
+                ]
+            },
+            "255": {
+                title: "Ayat Kursi (Al-Baqarah: 255)",
+                verses: [
+                    { num: 255, arabic: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ", latin: "Allāhu lā ilāha illā huwal-ḥayyul-qayyūm, lā ta'khużuhū sinatuw wa lā naūm", indo: "Allah, tidak ada tuhan selain Dia. Yang Mahahidup, yang terus-menerus mengurus (makhluk-Nya), tidak mengantuk dan tidak tidur." }
+                ]
+            }
+        };
+
+        function loadSurahContent() {
+            const val = document.getElementById('surahSelect').value;
+            const data = QURAN_DATA[val];
+            const container = document.getElementById('quranContainer');
+
+            document.getElementById('audioTitle').innerText = `Murottal ${data.title}`;
+
+            container.innerHTML = data.verses.map(v => `
+                <div class="bg-gray-50 neo-border p-4 rounded-xl space-y-2">
+                    <div class="flex justify-between items-center text-xs font-bold border-b pb-1">
+                        <span class="bg-brandYellow px-2 py-0.5 rounded neo-border-thin">Ayat ${v.num}</span>
+                    </div>
+                    <p class="text-right text-xl font-extrabold leading-loose font-serif">${v.arabic}</p>
+                    <p class="text-xs font-semibold text-amber-900">${v.latin}</p>
+                    <p class="text-xs text-gray-700">${v.indo}</p>
+                </div>
+            `).join('');
+        }
+
+        let isPlaying = false;
+        function toggleAudio() {
+            isPlaying = !isPlaying;
+            document.getElementById('audioIcon').className = isPlaying ? "fa-solid fa-pause text-xs" : "fa-solid fa-play text-xs";
+        }
+
+        /* ================= TABUNGAN KU ================= */
+        let savingsData = [
+            { amount: 1000000, note: "Saldo Awal", date: "2026-10-25" },
+            { amount: 250000, note: "Bonus Rezzx VIP", date: "2026-10-27" }
+        ];
+
+        function handleAddSavings(e) {
+            e.preventDefault();
+            const amt = parseInt(document.getElementById('savingsAmount').value);
+            const note = document.getElementById('savingsNote').value;
+
+            savingsData.push({
+                amount: amt,
+                note: note,
+                date: new Date().toISOString().split('T')[0]
+            });
+
+            document.getElementById('savingsAmount').value = '';
+            document.getElementById('savingsNote').value = '';
+            renderSavings();
+        }
+
+        function renderSavings() {
+            const total = savingsData.reduce((acc, curr) => acc + curr.amount, 0);
+            document.getElementById('totalSavings').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+
+            const pct = Math.min(100, (total / 2000000) * 100);
+            document.getElementById('savingsBar').style.width = `${pct}%`;
+
+            const historyContainer = document.getElementById('savingsHistory');
+            historyContainer.innerHTML = savingsData.map(item => `
+                <div class="flex justify-between items-center p-3 bg-gray-50 neo-border rounded-xl text-xs">
+                    <div>
+                        <span class="font-black block">${item.note}</span>
+                        <span class="text-[10px] text-gray-500">${item.date}</span>
+                    </div>
+                    <span class="font-extrabold text-green-600">+Rp ${item.amount.toLocaleString('id-ID')}</span>
+                </div>
+            `).join('');
+        }
+
+        /* ================= CHAT GLOBAL ================= */
+        const sampleChats = [
+            { user: "Rezzx", msg: "Selamat datang di Rezzx VIP Toolkit v4.0!", time: "18:00", isVip: true },
+            { user: "DevBot", msg: "Gunakan menu WA Kebal untuk proteksi nomor dari banned.", time: "18:02", isVip: false }
+        ];
+
+        function loadChatHistory() {
+            const stream = document.getElementById('chatStream');
+            stream.innerHTML = sampleChats.map(c => `
+                <div class="flex flex-col bg-white p-2.5 neo-border rounded-xl text-xs space-y-1">
+                    <div class="flex items-center gap-2">
+                        <span class="font-black">${c.user}</span>
+                        ${c.isVip ? '<span class="bg-yellow-400 text-[9px] font-black px-1.5 rounded border border-black">VIP</span>' : ''}
+                        <span class="text-[10px] text-gray-400 ml-auto">${c.time}</span>
+                    </div>
+                    <p class="text-gray-800">${c.msg}</p>
+                </div>
+            `).join('');
+            stream.scrollTop = stream.scrollHeight;
+        }
+
+        function handleSendChat(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            if(!input.value.trim()) return;
+
+            sampleChats.push({
+                user: currentUser.username,
+                msg: input.value,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                isVip: currentUser.isPremium
+            });
+
+            input.value = '';
+            loadChatHistory();
+        }
+
+        /* ================= MINI GAMES ================= */
+        // 1. SNAKE GAME
+        let snakeCanvas, snakeCtx;
+        let snake = [{x: 10, y: 10}];
+        let food = {x: 5, y: 5};
+        let dx = 1, dy = 0;
+        let snakeScore = 0;
+        let snakeInterval;
+
+        function initSnakeGame() {
+            snakeCanvas = document.getElementById('snakeCanvas');
+            snakeCtx = snakeCanvas.getContext('2d');
+            snake = [{x: 10, y: 10}];
+            dx = 1; dy = 0;
+            snakeScore = 0;
+            document.getElementById('snakeScore').innerText = '0';
+            clearInterval(snakeInterval);
+            snakeInterval = setInterval(updateSnake, 150);
+        }
+
+        function updateSnake() {
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+            // Wrap boundaries
+            if(head.x < 0) head.x = 25;
+            if(head.x >= 26) head.x = 0;
+            if(head.y < 0) head.y = 19;
+            if(head.y >= 20) head.y = 0;
+
+            snake.unshift(head);
+
+            if(head.x === food.x && head.y === food.y) {
+                snakeScore += 10;
+                document.getElementById('snakeScore').innerText = snakeScore;
+                food = {x: Math.floor(Math.random() * 25), y: Math.floor(Math.random() * 19)};
+            } else {
+                snake.pop();
+            }
+
+            // Draw
+            snakeCtx.fillStyle = "black";
+            snakeCtx.fillRect(0, 0, 260, 200);
+
+            // Draw Food
+            snakeCtx.fillStyle = "#FFD000";
+            snakeCtx.fillRect(food.x * 10, food.y * 10, 9, 9);
+
+            // Draw Snake
+            snakeCtx.fillStyle = "#FFFFFF";
+            snake.forEach(part => {
+                snakeCtx.fillRect(part.x * 10, part.y * 10, 9, 9);
+            });
+        }
+
+        function changeSnakeDir(dir) {
+            if(dir === 'UP' && dy === 0) { dx = 0; dy = -1; }
+            if(dir === 'DOWN' && dy === 0) { dx = 0; dy = 1; }
+            if(dir === 'LEFT' && dx === 0) { dx = -1; dy = 0; }
+            if(dir === 'RIGHT' && dx === 0) { dx = 1; dy = 0; }
+        }
+
+        // 2. TIC TAC TOE GAME
+        let tttBoardState = ["", "", "", "", "", "", "", "", ""];
+        let tttTurn = "X";
+
+        function initTTT() {
+            const board = document.getElementById('tttBoard');
+            board.innerHTML = '';
+            tttBoardState.forEach((val, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "bg-gray-100 neo-border font-black text-xl flex items-center justify-center rounded-xl";
+                btn.innerText = val;
+                btn.onclick = () => makeTTTMove(idx);
+                board.appendChild(btn);
+            });
+        }
+
+        function makeTTTMove(idx) {
+            if(tttBoardState[idx] !== "") return;
+            tttBoardState[idx] = tttTurn;
+            tttTurn = tttTurn === "X" ? "O" : "X";
+            document.getElementById('tttStatus').innerText = `Giliran: Player ${tttTurn}`;
+            initTTT();
+        }
+
+        function resetTTT() {
+            tttBoardState = ["", "", "", "", "", "", "", "", ""];
+            tttTurn = "X";
+            document.getElementById('tttStatus').innerText = "Giliran: Player X";
+            initTTT();
+        }
+
+        // 3. MEMORY GAME
+        const emojis = ['⚡', '⚡', '👑', '👑', '🔥', '🔥', '🛡️', '🛡️'];
+        let flippedCards = [];
+
+        function initMemoryGame() {
+            const grid = document.getElementById('memoryGrid');
+            grid.innerHTML = '';
+            const shuffled = [...emojis].sort(() => Math.random() - 0.5);
+
+            shuffled.forEach((emoji, idx) => {
+                const card = document.createElement('button');
+                card.className = "bg-brandYellow neo-border font-black text-lg flex items-center justify-center rounded-xl h-10 shadow-neo-sm";
+                card.dataset.emoji = emoji;
+                card.innerText = '❓';
+                card.onclick = () => flipMemoryCard(card);
+                grid.appendChild(card);
+            });
+        }
+
+        function flipMemoryCard(card) {
+            if(flippedCards.length >= 2 || card.innerText !== '❓') return;
+            card.innerText = card.dataset.emoji;
+            flippedCards.push(card);
+
+            if(flippedCards.length === 2) {
+                setTimeout(() => {
+                    if(flippedCards[0].dataset.emoji !== flippedCards[1].dataset.emoji) {
+                        flippedCards[0].innerText = '❓';
+                        flippedCards[1].innerText = '❓';
+                    }
+                    flippedCards = [];
+                }, 800);
+            }
+        }
+    </script>
+</body>
+</html>
+```
